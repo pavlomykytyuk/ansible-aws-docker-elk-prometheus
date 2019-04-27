@@ -1,0 +1,36 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /tmp/nginx/logs/access.log
+  fields:
+    type: nginx-access
+  fields_under_root: true
+  encoding: utf-8
+  exclude_files: [".gz"]
+  ignore_older: 3h
+
+- type: log
+  enabled: true
+  paths:
+    - /tmp/nginx/logs/error.logs
+  fields:
+    type: nginx-error
+  fields_under_root: true
+  encoding: utf-8
+  exclude_files: [".gz"]
+  ignore_older: 3h
+
+- type: log
+  enabled: true
+  paths:
+    - /tmp/wikijs/logs/*.log
+#    - /tmp/data/wikijs/logs/wiki-error-0.log
+  fields:
+    type: wikijs
+#  fields_under_root: true 
+#  multiline.pattern: 'Running all jobs...' 
+#  multiline.flush_pattern: 'All jobs completed successfully! Going to sleep for now.' 
+
+output.logstash:
+    hosts: ["logstash:5044"]

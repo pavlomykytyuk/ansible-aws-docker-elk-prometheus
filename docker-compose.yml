@@ -1,0 +1,228 @@
+version: '3.5'
+
+services:
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - /tmp/data/nginx/logs:/var/log/nginx/
+    networks:
+     - main_suite
+    ports:
+     - target: 80
+       published: 80
+       protocol: tcp
+       mode: host
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          # for example 'labels.host1 == true' (docker node update --label-add host1=true nodename)
+          - node.labels.host1 == true
+    configs:
+      - source: nginx_config
+        target: /etc/nginx/nginx.conf
+
+  wikidb:
+    image: mongo:3
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          # for example 'labels.host1 == true' (docker node update --label-add host1=true nodename)
+          - node.labels.host1 == true
+    command: '--smallfiles --bind_ip ::,0.0.0.0'
+    environment:
+      - 'MONGO_LOG_DIR=/dev/null'
+    volumes:
+      - /tmp/data/mongo:/data/db
+    networks:
+      - main_suite
+
+  wikijs:
+    image: 'requarks/wiki:latest'
+    ports:
+      - target: 80
+        published: 3001
+        protocol: tcp
+        mode: host
+    depends_on:
+      - wikidb
+    deploy:
+      replicas: 1
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          # for example 'labels.host1 == true' (docker node update --label-add host1=true nodename)
+          - node.labels.host1 == true
+    environment:
+      WIKI_ADMIN_EMAIL: admin@example.com
+    healthcheck:
+      test: curl -f http://localhost/login || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    volumes:
+      - /tmp/data/wikijs/logs:/logs/
+    configs:
+      - source: wikijs_config
+        target: /var/wiki/config.yml
+    networks:
+      - main_suite
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.0.0
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - /tmp/data/elasticsearch/data:/usr/share/elasticsearch/data
+    configs:
+      - source: elastic_config
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - main_suite
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          # for example 'labels.host3 == true' (docker node update --label-add host3=true nodename)
+          - node.labels.host3 == true
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash-oss:7.0.0
+    ports:
+      - "5000:5000"
+      - "9600:9600"
+      - "5044:5044"
+    volumes:
+      - /tmp/data/splunk/logs:/usr/share/logstash/logs
+    configs:
+      - source: logstash_config
+        target: /usr/share/logstash/config/logstash.yml
+      - source: logstash_pipeline
+        target: /usr/share/logstash/pipeline/logstash.conf
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - main_suite
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          # for example 'labels.host2 == true' (docker node update --label-add hos2=true nodename)
+          - node.labels.host2 == true
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana-oss:7.0.0
+    ports:
+      - "5601:5601"
+    configs:
+      - source: kibana_config
+        target: /usr/share/kibana/config/kibana.yml
+    networks:
+      - main_suite
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          # for example 'labels.host3 == true' (docker node update --label-add host3=true nodename)
+          - node.labels.host3 == true
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat-oss:7.0.0
+    command:
+      - "-e"
+      - "--strict.perms=false"
+    volumes:
+      - /tmp/data:/tmp
+    configs:
+      - source: filebeat_config
+        target: /usr/share/filebeat/filebeat.yml
+    networks:
+      - main_suite
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          # for example 'labels.host1 == true' (docker node update --label-add host1=true nodename)
+          - node.labels.host1 == true
+
+
+  exporter:
+    image: prom/node-exporter:latest
+    ports:
+      - '9100:9100'
+    volumes:
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+      - /proc:/host/proc:ro
+    deploy:
+      mode: global
+    networks:
+      - main_suite
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - '9090:9090'
+    volumes:
+      - /tmp/data/prometheus:/prometheus:rw
+    configs:
+      - source: prometheus_config
+        target: /etc/prometheus/prometheus.yml
+    networks:
+      - main_suite
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          # for example 'labels.host5 == true' (docker node update --label-add host5=true nodename)
+          - node.labels.host5 == true
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - /tmp/data/grafana:/var/lib/grafana:rw
+    networks:
+      - main_suite
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          # for example 'labels.host5 == true' (docker node update --label-add host5=true nodename)
+          - node.labels.host5 == true
+
+configs:
+
+  wikijs_config:
+    file: ./wiki/config/config.yml
+  nginx_config:
+      file: ./nginx/nginx.conf
+  elastic_config:
+    file: ./elasticsearch/config/elasticsearch.yml
+  logstash_config:
+    file: ./logstash/config/logstash.yml
+  logstash_pipeline:
+    file: ./logstash/pipeline/logstash.conf
+  kibana_config:
+    file: ./kibana/config/kibana.yml
+  filebeat_config:
+      file: ./filebeat/config/filebeat.yml
+  prometheus_config:
+      file: ./prometheus/config/prometheus.yml
+
+networks:
+  main_suite:
+    driver: overlay

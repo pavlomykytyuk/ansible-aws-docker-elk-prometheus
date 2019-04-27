@@ -1,0 +1,70 @@
+---
+- name: Installing Docker
+  yum: name={{ item }}
+  with_items:
+    - python-pip
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
+    - amazon-linux-extras
+
+- name: Add extras repository
+  shell: yum-config-manager --enable extras
+
+- name: Install docker-ce (centos) via amazon-linux-extras packages
+  shell: "amazon-linux-extras install docker=18.06.1 -y"
+
+- name: Enable Docker CE service at startup
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Add user ec2-user to group docker
+  user: name=ec2-user groups=docker append=yes state=present
+
+- name: restart-docker
+  service: name=docker state=restarted daemon_reload=yes
+
+
+
+#####Config for Centos7
+
+#    - name: Clean old repos
+#      file:
+#        dest: /etc/yum.repos.d/docker.repo
+#        state: absent
+#
+#    - name: Clean old repos
+#      file:
+#        dest: /etc/yum.repos.d/dockerrepo.repo
+#        state: absent
+
+#    - name: Add docker repository
+#      yum_repository:
+#        name: docker
+#        description: Docker Repository
+#        baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+#        gpgcheck: no
+#        enabled: yes
+
+#    - name: Remove packages
+#      yum: pkg={{item}} state=absent
+#      with_items:
+#        - docker
+#        - docker-ce
+#        - docker-ce-cli
+
+#    - name: Install packages
+#      yum: pkg={{item}} state=installed
+#      with_items:
+#        - docker-ce-18.06.1.ce-3.el7
+
+#    - name: enable-docker
+#      service: name=docker enabled=yes
+
+#    - name: Add user centos to group docker
+#      user: name=centos groups=docker append=yes state=present
+
+#    - name: restart-docker
+#      service: name=docker state=restarted daemon_reload=yes

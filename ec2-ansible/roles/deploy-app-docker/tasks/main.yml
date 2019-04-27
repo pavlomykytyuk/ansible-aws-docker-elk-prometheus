@@ -1,0 +1,14 @@
+- name: installing base programs
+  yum: name={{ item }}
+  with_items:
+    - git
+    - zip
+    - unzip
+
+- git:
+    repo: https://github.com/pavlomykytyuk/ec2-ansible-dockers-warm.git
+    dest: /tmp/pavlo
+ #   separate_git_dir: /tmp/ansible-examples.git
+
+- name: deploying application
+  shell: docker stack deploy -c /tmp/pavlo/task3/balancer.yml pavlo-stack

@@ -1,0 +1,5 @@
+#- name:  Add selinux rules
+#  command: setsebool httpd_can_network_connect on -P
+#- selinux:
+#    policy: targeted
+#    state: permissive

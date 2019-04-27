@@ -1,0 +1,136 @@
+---
+- name: Create a Demo5EC2 instance
+  hosts: localhost
+  gather_facts: True
+
+  vars:
+      region: us-west-2
+      instance_type: t2.micro
+      ami: ami-061392db613a6357b #aws
+#      ami: ami-01ed306a12b7d1c96 #centos
+      keypair: pavlo.mykytyuk
+
+  tasks:
+###master
+    - name: Create an Master instance
+      ec2:
+         key_name: "{{ keypair }}"
+         group: SecGroup for public network
+         instance_type: "{{ instance_type}}"
+         image: "{{ ami }}"
+         wait: true
+         region: "{{ region }}"
+         count: 1
+         instance_tags:
+            Name: master
+         vpc_subnet_id: subnet-0cf73cb75c190fb50
+         assign_public_ip: yes
+      register: ec2
+
+    - name: Wait for SSH to come up
+      wait_for: host={{ item.public_ip }} port=22 delay=10 timeout=120
+      with_items: "{{ ec2.instances }}"
+
+    - name: Add host to groupname
+      add_host: hostname={{ item.public_ip }} groupname=masters
+      with_items: "{{ ec2.instances }}"
+
+    - name: Add host to groupname
+      add_host: hostname={{ item.private_ip }} groupname=mastersprivate
+      with_items: "{{ ec2.instances }}"
+
+
+
+##Worker
+    - name: Create an Worker instance
+      ec2:
+         key_name: "{{ keypair }}"
+         group: SecGroup for public network
+         instance_type: "{{ instance_type}}"
+         image: "{{ ami }}"
+         wait: true
+         region: "{{ region }}"
+         count: 2
+         instance_tags:
+            Name: worker
+         vpc_subnet_id: subnet-0cf73cb75c190fb50
+         assign_public_ip: yes
+      register: ec2
+
+    - name: Wait for SSH to come up
+      wait_for: host={{ item.public_ip }} port=22 delay=10 timeout=120
+      with_items: "{{ ec2.instances }}"
+
+    - name: Add host to groupname
+      add_host: hostname={{ item.public_ip }} groupname=workers
+      with_items: "{{ ec2.instances }}"
+
+- name: Manage instance Master 
+  hosts: masters
+  remote_user: ec2-user
+  connection: ssh
+  sudo: True
+  roles:
+    - preconf
+    - selinux
+    - docker
+
+- name: Manage instance Worker
+  hosts: workers
+  remote_user: ec2-user
+  connection: ssh
+  sudo: True
+  roles:
+    - preconf
+    - selinux
+    - docker
+
+- name: Init Swarm Master
+  hosts: masters
+  gather_facts: False
+  remote_user: ec2-user
+  tasks:
+    - name: Swarm Init
+      command: docker swarm init --advertise-addr {{ hostvars[groups['mastersprivate'][0]]['inventory_hostname'] }}
+
+    - name: Get Worker Token
+      command: docker swarm join-token worker -q
+      register: worker_token
+
+    - name: Show Worker Token
+      debug: var=worker_token.stdout
+
+    - name: Master Token
+      command: docker swarm join-token manager -q
+      register: master_token
+
+    - name: Show Master Token
+      debug: var=master_token.stdout
+
+- name: Join Swarm Cluster
+  hosts: workers
+  remote_user: ec2-user
+  sudo: True
+  gather_facts: False
+  vars:
+    token: "{{ hostvars[groups['masters'][0]]['worker_token']['stdout'] }}"
+    master: "{{ hostvars[groups['mastersprivate'][0]]['inventory_hostname'] }}"
+ 
+  tasks:
+    - name: Join Swarm Cluster as a Worker
+      command: docker swarm join --token {{ token }} {{ master }}:2377
+      register: worker
+
+    - name: Show Results
+      debug: var=worker.stdout
+
+    - name: Show Errors
+      debug: var=worker.stderr
+
+- name: Deploy App
+  hosts: masters
+  remote_user: ec2-user
+  connection: ssh
+  sudo: True
+  roles:
+    - deploy-app-docker

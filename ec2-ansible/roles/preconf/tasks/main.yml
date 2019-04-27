@@ -1,0 +1,21 @@
+- name: installing base programs
+  yum: name={{ item }}
+  with_items:
+    - wget
+    - curl
+    - zip
+    - unzip
+
+- file:
+    path: /var/log/journal
+    state: directory
+    mode: "u=rwx,g=rs,o=rx"
+
+- name: Fix permissions
+  command: systemd-tmpfiles --create --prefix /var/log/journal
+
+- name: Restart systemd-journald
+  systemd:
+    daemon_reload: yes
+    name: systemd-journald
+    state: restarted
