@@ -26,9 +26,11 @@
     mode: "{{item.mode}}"
     state: directory
   loop:
-    - { dest: '/tmp/data/elasticsearch', mode: '0777'}
+    - { dest: '/tmp/data/elasticsearch/data', mode: '0777'}
     - { dest: '/tmp/data/grafana', mode: '0777'}
     - { dest: '/tmp/data/mongo', mode: '0777'}
     - { dest: '/tmp/data/splunk/logs', mode: '0777'}
     - { dest: '/tmp/data/nginx/logs', mode: '0777'}
     - { dest: '/tmp/data/prometheus', mode: '0777'}
+    - { dest: '/tmp/data/wikijs/logs', mode: '0777'}
+
