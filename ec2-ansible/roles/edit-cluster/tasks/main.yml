@@ -1,0 +1,15 @@
+- name: nodeupdate1
+  command: docker node update --label-add host1=true {{ hostvars[groups['hostname1'][0]]['inventory_hostname'] }}
+
+- name: nodeupdate2
+  command: docker node update --label-add host2=true {{ hostvars[groups['hostname2'][0]]['inventory_hostname'] }}
+
+- name: nodeupdate3
+  command: docker node update --label-add host3=true {{ hostvars[groups['hostname3'][0]]['inventory_hostname'] }}
+
+- name: nodeupdate4
+  command: docker node update --label-add host4=true {{ hostvars[groups['hostname4'][0]]['inventory_hostname'] }}
+
+- name: nodeupdate5
+  command: docker node update --label-add host5=true {{ hostvars[groups['hostname5'][0]]['inventory_hostname'] }}
+
