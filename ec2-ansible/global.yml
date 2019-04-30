@@ -294,6 +294,14 @@
   remote_user: ec2-user
   connection: ssh
   sudo: True
+  vars:
+    myhost1: "{{ hostvars[groups['hostname1'][0]]['inventory_hostname'] }}"
+    myhost2: "{{ hostvars[groups['hostname2'][0]]['inventory_hostname'] }}"
+    myhost3: "{{ hostvars[groups['hostname3'][0]]['inventory_hostname'] }}"
+    myhost4: "{{ hostvars[groups['hostname4'][0]]['inventory_hostname'] }}"
+    myhost5: "{{ hostvars[groups['hostname5'][0]]['inventory_hostname'] }}"
+    mypublichost: "{{ hostvars[groups['masters'][0]]['inventory_hostname'] }}"
+
   roles:
 #    - edit-cluster
     - deploy-app-docker
