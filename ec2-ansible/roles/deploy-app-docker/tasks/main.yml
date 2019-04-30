@@ -11,16 +11,16 @@
  #   separate_git_dir: /tmp/ansible-examples.git
 
 - name: Render k8s defs (infra)
-    template:
-      src: "/tmp/repo/wiki/config/config.yml.j2"
-      dest: "/tmp/repo/wiki/config/config.yml"
-      mode: 0644
+  template:
+    src: "/tmp/repo/wiki/config/config.yml.j2"
+    dest: "/tmp/repo/wiki/config/config.yml"
+    mode: 0644
 
 - name: Render k8s defs (infra)
-    template:
-      src: "/tmp/repo/prometheus/config/prometheus.yml.j2"
-      dest: "/tmp/repo/prometheus/config/prometheus.yml"
-      mode: 0644
+  template:
+    src: "/tmp/repo/prometheus/config/prometheus.yml.j2"
+    dest: "/tmp/repo/prometheus/config/prometheus.yml"
+    mode: 0644
 
 
 - name: deploying application
