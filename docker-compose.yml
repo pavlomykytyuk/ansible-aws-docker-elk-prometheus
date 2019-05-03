@@ -204,6 +204,49 @@ services:
           # for example 'labels.host5 == true' (docker node update --label-add host5=true nodename)
           - node.labels.host5 == true
 
+
+  splunk:
+    image: splunk/splunk:7.2.6
+    ports:
+      - "8000:8000"
+      - "8088:8088"
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_PASSWORD=changeme
+#    volumes:
+#      - /tmp/data/grafana:/var/lib/grafana:rw
+    networks:
+      - main_suite
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          # for example 'labels.host4 == true' (docker node update --label-add host4=true nodename)
+          - node.labels.host4 == true
+
+
+  splunk-forwarder:
+    image: splunk/universalforwarder:7.2.6
+    ports:
+      - "9997:9997"
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_PASSWORD=changeme
+      - SPLUNK_STANDALONE_URL=splunk
+#    volumes:
+#      - /tmp/data/grafana:/var/lib/grafana:rw
+    networks:
+      - main_suite
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          # for example 'labels.host2 == true' (docker node update --label-add host4=true nodename)
+          - node.labels.host2 == true
+
+
 configs:
 
   wikijs_config:

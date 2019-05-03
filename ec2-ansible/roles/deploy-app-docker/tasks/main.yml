@@ -15,13 +15,14 @@
     src: "../wiki/config/config.yml.j2"
     dest: "/tmp/repo/wiki/config/config.yml"
     mode: 0644
+#    remote_src: yes
 
 - name: Render k8s defs 2 (infra)
   template:
     src: "../prometheus/config/prometheus.yml.j2"
     dest: "/tmp/repo/prometheus/config/prometheus.yml"
     mode: 0644
-  
+#    remote_src: yes  
 
 - name: deploying application
-  shell: docker stack deploy -c /tmp/repo/docker-compose.yml pavlo-stack
+  shell: docker stack deploy -c /tmp/repo/docker-compose.yml pavlomykytyuk-stack
