@@ -125,6 +125,8 @@ services:
     configs:
       - source: kibana_config
         target: /usr/share/kibana/config/kibana.yml
+      - source: kibana_dashboard
+        target: /usr/share/kibana/config/export.json
     networks:
       - main_suite
     deploy:
@@ -194,9 +196,7 @@ services:
       - "3000:3000"
     volumes:
       - /tmp/data/grafana:/var/lib/grafana:rw
-    configs:
-      - source: grafana_dashboard
-        target: /etc/grafana/provisioning/
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
     environment: 
       - GF_SECURITY_ADMIN_PASSWORD=foobar
       - GF_USERS_ALLOW_SIGN_UP=false
@@ -267,12 +267,14 @@ configs:
     file: ./logstash/pipeline/logstash.conf
   kibana_config:
     file: ./kibana/config/kibana.yml
+  kibana_dashboard:
+    file: ./kibana/config/export.json
   filebeat_config:
     file: ./filebeat/config/filebeat.yml
   prometheus_config:
     file: ./prometheus/config/prometheus.yml
-  grafana_dashboard:
-    file: ./grafana/provisioning/
+    #  grafana_dashboard:
+    #    file: ./grafana/provisioning/
 
 networks:
   main_suite:
