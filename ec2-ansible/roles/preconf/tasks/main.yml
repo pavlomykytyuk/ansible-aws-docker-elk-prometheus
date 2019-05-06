@@ -36,4 +36,4 @@
     - { dest: '/tmp/data/grafana/provisioning/dashboards', mode: '0777'}
     - { dest: '/tmp/data/grafana/provisioning/datasources', mode: '0777'}   
     - { dest: '/tmp/data/grafana/dashboards', mode: '0777'}
-
+    - { dest: '/var/lib/grafana/dashboards', mode: '0777'}
