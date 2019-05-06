@@ -258,7 +258,7 @@ configs:
   wikijs_config:
     file: ./wiki/config/config.yml
   nginx_config:
-      file: ./nginx/nginx.conf
+    file: ./nginx/nginx.conf
   elastic_config:
     file: ./elasticsearch/config/elasticsearch.yml
   logstash_config:
@@ -272,7 +272,7 @@ configs:
   prometheus_config:
     file: ./prometheus/config/prometheus.yml
   grafana_dashboard:
-    folder: ./grafana/provisioning/
+    file: ./grafana/provisioning/
 
 networks:
   main_suite:
