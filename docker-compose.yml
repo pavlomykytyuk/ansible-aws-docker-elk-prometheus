@@ -194,7 +194,9 @@ services:
       - "3000:3000"
     volumes:
       - /tmp/data/grafana:/var/lib/grafana:rw
-      - /tmp/data/grafana/provisioning/:/etc/grafana/provisioning/
+    configs:
+      - source: grafana_dashboard
+        target: /etc/grafana/provisioning/
     environment: 
       - GF_SECURITY_ADMIN_PASSWORD=foobar
       - GF_USERS_ALLOW_SIGN_UP=false
@@ -269,6 +271,8 @@ configs:
     file: ./filebeat/config/filebeat.yml
   prometheus_config:
     file: ./prometheus/config/prometheus.yml
+  grafana_dashboard:
+    folder: ./grafana/provisioning/
 
 networks:
   main_suite:
