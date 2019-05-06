@@ -4,6 +4,8 @@
     - git
     - mc
     - nano
+    - htop
+    - telnet
 
 - git:
     repo: https://github.com/pavlomykytyuk/ansible-aws-docker-elk-prometheus.git
