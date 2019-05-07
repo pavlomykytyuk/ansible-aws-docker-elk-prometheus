@@ -198,11 +198,11 @@ services:
     volumes:
       - /tmp/data/grafana:/var/lib/grafana:rw
     configs:
-      - source: grafana_datasource
+      - source: grafana
         target: /etc/grafana/provisioning/datasources/datasource.yml
-      - source: grafana_dashboard
+      - source: grafana2
         target: /etc/grafana/provisioning/dashboards/dashboard.yml
-      - source: grafana_dashboard_json
+      - source: grafana3
         target: /var/lib/grafana/dashboards/mdashboard.json
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=foobar
@@ -278,13 +278,14 @@ configs:
     file: ./filebeat/config/filebeat.yml
   prometheus_config:
     file: ./prometheus/config/prometheus.yml
-  grafana_datasource:
+  grafana:
      file: ./grafana/provisioning/datasources/datasource.yml
-  grafana_dashboard:
+  grafana2:
      file: ./grafana/provisioning/dashboards/dashboard.yml
-  grafana_dashboard_json:
+  grafana3:
      file: ./grafana/dashboards/mdashboard.json
 
 networks:
   main_suite:
     driver: overlay
+
