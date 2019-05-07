@@ -197,7 +197,7 @@ services:
       - "3000:3000"
     volumes:
       - /tmp/data/grafana:/var/lib/grafana:rw
-      - ./grafana/dashboards/main_rev5.json:/var/lib/grafana/dashboards/main_rev5.json
+      - /tmp/data/grafana/dashboards/main_rev5.json:/var/lib/grafana/dashboards/main_rev5.json
     configs:
       - source: grafana_datasource
         target: /etc/grafana/provisioning/datasources/datasource.yml
