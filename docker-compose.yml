@@ -204,7 +204,7 @@ services:
       - source: grafana_dashboard
         target: /etc/grafana/provisioning/dashboards/dashboard.yml
       - source: grafana_dashboard_json
-        target: /etc/grafana/dashboards/main_rev5.json
+        target: /etc/grafana/provisioning/dashboards/main_rev5.json
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=foobar
       - GF_USERS_ALLOW_SIGN_UP=false
@@ -228,8 +228,6 @@ services:
     environment:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_PASSWORD=changeme
-#    volumes:
-#      - /tmp/data/grafana:/var/lib/grafana:rw
     networks:
       - main_suite
     deploy:
@@ -249,8 +247,6 @@ services:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_PASSWORD=changeme
       - SPLUNK_STANDALONE_URL=splunk
-#    volumes:
-#      - /tmp/data/grafana:/var/lib/grafana:rw
     networks:
       - main_suite
     deploy:
@@ -288,7 +284,7 @@ configs:
   grafana_dashboard:
      file: ./grafana/provisioning/dashboards/dashboard.yml
   grafana_dashboard_json:
-     file: ./grafana/dashboards/main_rev5.json
+     file: ./grafana/provisioning/dashboards/main_rev5.json
 
 networks:
   main_suite:
