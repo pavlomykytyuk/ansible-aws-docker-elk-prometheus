@@ -197,14 +197,14 @@ services:
       - "3000:3000"
     volumes:
       - /tmp/data/grafana:/var/lib/grafana:rw
-#      - ./grafana/provisioning/:/etc/grafana/provisioning/
+      - ./grafana/dashboards/main_rev5.json:/var/lib/grafana/dashboards/main_rev5.json
     configs:
       - source: grafana_datasource
         target: /etc/grafana/provisioning/datasources/datasource.yml
       - source: grafana_dashboard
         target: /etc/grafana/provisioning/dashboards/dashboard.yml
       - source: grafana_dashboard_json
-        target: /etc/grafana/provisioning/dashboards/main_rev5.json
+        target: /var/lib/grafana/dashboards/main_rev5.json
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=foobar
       - GF_USERS_ALLOW_SIGN_UP=false
@@ -284,7 +284,7 @@ configs:
   grafana_dashboard:
      file: ./grafana/provisioning/dashboards/dashboard.yml
   grafana_dashboard_json:
-     file: ./grafana/provisioning/dashboards/main_rev5.json
+     file: ./grafana/dashboards/main_rev5.json
 
 networks:
   main_suite:
