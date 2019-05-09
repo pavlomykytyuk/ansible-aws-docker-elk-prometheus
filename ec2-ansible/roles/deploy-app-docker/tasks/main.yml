@@ -3,7 +3,7 @@
   loop:
     - git
     - mc
-    - nano
+    - ntp
     - htop
     - telnet
 

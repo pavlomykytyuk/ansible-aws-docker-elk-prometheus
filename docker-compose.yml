@@ -217,16 +217,16 @@ services:
           # for example 'labels.host5 == true' (docker node update --label-add host5=true nodename)
           - node.labels.host5 == true
 
-
-
   splunk:
     image: splunk/splunk:7.2.6
     ports:
       - "8000:8000"
-      - "8088:8088"
+      - "8089:8089"
     environment:
       - SPLUNK_START_ARGS=--accept-license
-      - SPLUNK_PASSWORD=changeme
+      - SPLUNK_PASSWORD=changeme1
+      - SPLUNK_ENABLE_LISTEN=9997
+      - SPLUNK_ENABLE_DEPLOY_SERVER=true
     networks:
       - main_suite
     deploy:
@@ -235,24 +235,19 @@ services:
       placement:
         constraints:
           # for example 'labels.host4 == true' (docker node update --label-add host4=true nodename)
-          - node.labels.host4 == true
-
-
-  splunk-forwarder:
+           - node.labels.host4 == true
+          
+  forwarder:
     image: splunk/universalforwarder:7.2.6
-    ports:
-      - "9997:9997"
-    restart: always
-    configs:
-      - source: splunkforwarder
-        target: /opt/splunkforwarder/etc/system/local/inputs.conf
+    volumes:
+      - /tmp/data/splunk/:/home/splunk/logs
     environment:
-      - SPLUNK_START_ARGS=--accept-license
-      - SPLUNK_PASSWORD=changeme
-      - SPLUNK_STANDALONE_URL=splunk
-    command:
-      - "splunk add forward-server splunk:9997 -auth admin:changeme"
-      - "splunk add monitor /tmp/data/splunk/logs"
+       SPLUNK_START_ARGS: '--accept-license'
+       SPLUNK_PASSWORD: 'changeme1'
+       SPLUNK_CMD: 'add forward-server splunk:9997 -auth admin:changeme1'
+       SPLUNK_ADD: 'monitor /home/splunk/logs/logs/*'
+       SPLUNK_FORWARD_SERVER_ARGS: '-method clone'
+       SPLUNK_DEPLOYMENT_SERVER: 'splunk'
     networks:
       - main_suite
     deploy:
@@ -262,7 +257,8 @@ services:
         constraints:
           # for example 'labels.host2 == true' (docker node update --label-add host4=true nodename)
           - node.labels.host2 == true
-    
+
+
 configs:
 
   wikijs_config:
@@ -289,8 +285,6 @@ configs:
      file: ./grafana/provisioning/dashboards/dashboard.yml
   grafana3:
      file: ./grafana/dashboards/mdashboard.json
-  splunkforwarder:
-     file: ./splunk/config/inputs.conf
 
 networks:
   main_suite:
