@@ -222,6 +222,9 @@ services:
     ports:
       - "8000:8000"
       - "8089:8089"
+    configs:
+      - source: splunk
+        target: /opt/splunk/etc/system/default/server.conf
     environment:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_PASSWORD=changeme1
@@ -285,6 +288,9 @@ configs:
      file: ./grafana/provisioning/dashboards/dashboard.yml
   grafana3:
      file: ./grafana/dashboards/mdashboard.json
+  splunk:
+     file: ./splunk/config/server.conf
+
 
 networks:
   main_suite:
