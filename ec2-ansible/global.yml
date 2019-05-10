@@ -3,19 +3,21 @@
   hosts: localhost
 #  gather_facts: True
 
+
   vars:
       region: us-west-2
       instance_type: t2.micro
-      ami: ami-061392db613a6357b #aws
+      ami: ami-061392db613a6357b #awslinux
 #      ami: ami-01ed306a12b7d1c96 #centos
       keypair: pavlo.mykytyuk
+      vpc_subnet_id: subnet-0cf73cb75c190fb50
+      group: SecGroup for public network
 
   tasks:
-###host1-master
     - name: Create a Master instance
       ec2:
          key_name: "{{ keypair }}"
-         group: SecGroup for public network
+         group: "{{ group }}"
          instance_type: "{{ instance_type}}"
          image: "{{ ami }}"
          wait: true
@@ -23,7 +25,7 @@
          count: 1
          instance_tags:
             Name: host1
-         vpc_subnet_id: subnet-0cf73cb75c190fb50
+         vpc_subnet_id: "{{ vpc_subnet_id }}"
          assign_public_ip: yes
       register: ec2
 
@@ -58,15 +60,15 @@
     - name: Create a Worker instance
       ec2:
          key_name: "{{ keypair }}"
-         group: SecGroup for public network
-         instance_type: "{{ instance_type}}"
+         group: "{{ group }}"
+         instance_type: "{{ instance_type }}"
          image: "{{ ami }}"
          wait: true
          region: "{{ region }}"
          count: 1
          instance_tags:
             Name: host2
-         vpc_subnet_id: subnet-0cf73cb75c190fb50
+         vpc_subnet_id: "{{ vpc_subnet_id }}"
          assign_public_ip: yes
       register: ec2
 
@@ -94,7 +96,7 @@
     - name: Create a Worker instance
       ec2:
          key_name: "{{ keypair }}"
-         group: SecGroup for public network
+         group: "{{ group }}"
          instance_type: "{{ instance_type}}"
          image: "{{ ami }}"
          wait: true
@@ -102,7 +104,7 @@
          count: 1
          instance_tags:
             Name: host3
-         vpc_subnet_id: subnet-0cf73cb75c190fb50
+         vpc_subnet_id: "{{ vpc_subnet_id }}"
          assign_public_ip: yes
       register: ec2
 
@@ -130,7 +132,7 @@
     - name: Create a Worker instance
       ec2:
          key_name: "{{ keypair }}"
-         group: SecGroup for public network
+         group: "{{ group }}"
          instance_type: "{{ instance_type}}"
          image: "{{ ami }}"
          wait: true
@@ -141,7 +143,7 @@
          volumes:
             - device_name: /dev/xvda
               volume_size: 10
-         vpc_subnet_id: subnet-0cf73cb75c190fb50
+         vpc_subnet_id: "{{ vpc_subnet_id }}"
          assign_public_ip: yes
       register: ec2
 
@@ -169,15 +171,15 @@
     - name: Create a Worker instance
       ec2:
          key_name: "{{ keypair }}"
-         group: SecGroup for public network
-         instance_type: "{{ instance_type}}"
+         group: "{{ group }}"
+         instance_type: "{{ instance_type }}"
          image: "{{ ami }}"
          wait: true
          region: "{{ region }}"
          count: 1
          instance_tags:
             Name: host5
-         vpc_subnet_id: subnet-0cf73cb75c190fb50
+         vpc_subnet_id: "{{ vpc_subnet_id }}"
          assign_public_ip: yes
       register: ec2
 
