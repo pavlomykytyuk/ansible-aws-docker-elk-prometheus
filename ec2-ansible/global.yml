@@ -138,6 +138,9 @@
          count: 1
          instance_tags:
             Name: host4
+         volumes:
+            - device_name: /dev/xvda
+              volume_size: 10
          vpc_subnet_id: subnet-0cf73cb75c190fb50
          assign_public_ip: yes
       register: ec2
