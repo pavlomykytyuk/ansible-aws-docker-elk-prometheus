@@ -7,9 +7,13 @@ This repository contains docker-compose file for creating an infrastructure for 
 The infrastructure includes the following components:
 
 Webserver Nginx with aplication WikiJs
+
 Log aggregation and analyzing tools(Splunk, Elastic Stack)
+
 Monitoring tools (Prometheus, Splunk, Elastic Stack)
+
 Dashboard and visualization tools (Grafana, Kibana, Splunk)
+
 Configuration management tools Ansible
 
 #How it is works?
@@ -38,4 +42,5 @@ Access for ports 22,80,3000,5000,5044,5601,2376,2377,7946,8000,8089,9090,9997,91
 ansible-playbook -i ec2.py  ec2-ansible/global.yml
 ```
 
-#5 Connect to microservices
+#5 Connect to microservices using credential from official docker images
+
