@@ -274,7 +274,7 @@ configs:
   kibana_config:
     file: ./kibana/config/kibana.yml
   kibana_dashboard:
-    file: ./kibana/config/export.json
+    file: ./kibana/config/dashboard.json
   filebeat_config:
     file: ./filebeat/config/filebeat.yml
   prometheus_config:
