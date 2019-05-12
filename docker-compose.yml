@@ -126,7 +126,7 @@ services:
       - source: kibana_config
         target: /usr/share/kibana/config/kibana.yml
       - source: kibana_dashboard
-        target: /usr/share/kibana/config/export.json
+        target: /usr/share/kibana/config/dashboard.json
     networks:
       - main_suite
     deploy:
@@ -290,3 +290,4 @@ configs:
 networks:
   main_suite:
     driver: overlay
+
